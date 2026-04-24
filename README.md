@@ -21,6 +21,14 @@ A production-ready AI-powered workspace platform with autonomous execution, inte
 - **Web Search Integration**: Brave Search for external knowledge
 - **Cache System**: Redis + Supabase for fast responses
 
+## Design
+
+<img width="1918" height="962" alt="01892d98-e79c-4f33-ade9-2a0c299f0fa7" src="https://github.com/user-attachments/assets/b26d95e1-d1e0-4d7f-befe-43b768a4747d" />
+<img width="1918" height="957" alt="b4f54d34-c922-4bde-9250-c80f240bd6aa" src="https://github.com/user-attachments/assets/ec82b457-b595-4d0a-8f83-7955c164c947" />
+<img width="1918" height="975" alt="172c0080-08c0-461c-9fab-ab0172e654b2" src="https://github.com/user-attachments/assets/cb03c0fa-914d-41d4-9e76-2e1b8e431d3e" />
+<img width="1918" height="962" alt="ae1d22a2-71a7-46b2-8f5d-19304f12a2af" src="https://github.com/user-attachments/assets/9bbf8a5e-28ad-4b25-a9c6-90d3c878da6d" />
+
+
 ## 🏗️ Architecture
 
 ### Frontend
