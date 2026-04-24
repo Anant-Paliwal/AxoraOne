@@ -244,7 +244,6 @@ MIT License - see LICENSE file for details
 
 ## 🙏 Acknowledgments
 
-- Built with [Lovable](https://lovable.dev)
 - UI components from [shadcn/ui](https://ui.shadcn.com)
 - AI powered by [OpenAI](https://openai.com)
 - Database by [Supabase](https://supabase.com)
