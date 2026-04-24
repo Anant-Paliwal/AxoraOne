@@ -1,0 +1,572 @@
+/* Tiptap Editor Styles */
+
+/* Notion-style block placeholder */
+[contenteditable][data-placeholder]:empty:before {
+  content: attr(data-placeholder);
+  color: hsl(var(--muted-foreground));
+  opacity: 0.5;
+  pointer-events: none;
+  position: absolute;
+}
+
+/* Professional Notion-style Editor */
+.notion-editor .ProseMirror {
+  outline: none;
+  min-height: 300px;
+  font-size: 16px;
+  line-height: 1.75;
+  color: hsl(var(--foreground));
+}
+
+.notion-editor .ProseMirror > * {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.notion-editor .ProseMirror > *:first-child {
+  margin-top: 0;
+}
+
+.notion-editor .ProseMirror > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Headings - Notion style */
+.notion-editor .ProseMirror h1 {
+  font-size: 2.5em;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  letter-spacing: -0.02em;
+}
+
+.notion-editor .ProseMirror h2 {
+  font-size: 1.875em;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-top: 0.875em;
+  margin-bottom: 0.5em;
+  letter-spacing: -0.01em;
+}
+
+.notion-editor .ProseMirror h3 {
+  font-size: 1.5em;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-top: 0.75em;
+  margin-bottom: 0.5em;
+}
+
+/* Paragraphs */
+.notion-editor .ProseMirror p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+/* Lists - Better spacing */
+.notion-editor .ProseMirror ul,
+.notion-editor .ProseMirror ol {
+  padding-left: 1.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.notion-editor .ProseMirror li {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
+
+/* Blockquotes - Notion style */
+.notion-editor .ProseMirror blockquote {
+  border-left: 3px solid hsl(var(--primary));
+  padding-left: 1em;
+  margin-left: 0;
+  margin-right: 0;
+  font-style: italic;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Code blocks - Professional */
+.notion-editor .ProseMirror pre {
+  background: hsl(var(--secondary));
+  border-radius: 8px;
+  padding: 1em;
+  overflow-x: auto;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: 0.875em;
+  line-height: 1.6;
+}
+
+.notion-editor .ProseMirror code {
+  background: hsl(var(--secondary));
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: 0.875em;
+}
+
+/* Task lists - Notion style */
+.notion-editor .ProseMirror ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+}
+
+.notion-editor .ProseMirror ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5em;
+}
+
+.notion-editor .ProseMirror ul[data-type="taskList"] li > label {
+  flex: 0 0 auto;
+  margin-top: 0.25em;
+}
+
+.notion-editor .ProseMirror ul[data-type="taskList"] li > div {
+  flex: 1;
+}
+
+/* Tables - Clean design */
+.notion-editor .ProseMirror table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.notion-editor .ProseMirror th,
+.notion-editor .ProseMirror td {
+  border: 1px solid hsl(var(--border));
+  padding: 0.75em 1em;
+  text-align: left;
+  vertical-align: top;
+}
+
+.notion-editor .ProseMirror th {
+  background: hsl(var(--muted));
+  font-weight: 600;
+}
+
+/* Images - Responsive */
+.notion-editor .ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1em 0;
+}
+
+/* Links - Subtle */
+.notion-editor .ProseMirror a {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+  text-decoration-color: hsl(var(--primary) / 0.3);
+  text-underline-offset: 2px;
+  transition: all 0.2s;
+}
+
+.notion-editor .ProseMirror a:hover {
+  text-decoration-color: hsl(var(--primary));
+}
+
+/* Selection */
+.notion-editor .ProseMirror ::selection {
+  background: hsl(var(--primary) / 0.2);
+}
+
+/* Placeholder */
+.notion-editor .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: hsl(var(--muted-foreground));
+  opacity: 0.4;
+  pointer-events: none;
+  height: 0;
+}
+
+/* Drag and Drop Blocks */
+.group\/block {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.group\/block:hover {
+  transform: translateX(8px);
+}
+
+.group\/block [data-rbd-draggable-context-id] {
+  cursor: grab;
+}
+
+.group\/block [data-rbd-draggable-context-id]:active {
+  cursor: grabbing;
+}
+
+/* Drag handle visibility */
+.group\/block .drag-handle {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.group\/block:hover .drag-handle {
+  opacity: 1;
+}
+.ProseMirror {
+  outline: none;
+  min-height: 500px;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: var(--muted-foreground);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Headings */
+.ProseMirror h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.ProseMirror h2 {
+  font-size: 1.875rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-top: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.ProseMirror h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Paragraphs */
+.ProseMirror p {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.75;
+}
+
+/* Lists */
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 1.5rem;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.ProseMirror ul {
+  list-style-type: disc;
+}
+
+.ProseMirror ol {
+  list-style-type: decimal;
+}
+
+.ProseMirror li {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.ProseMirror li p {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Code */
+.ProseMirror code {
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+  font-family: 'Courier New', monospace;
+}
+
+.ProseMirror pre {
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.ProseMirror pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Blockquote */
+.ProseMirror blockquote {
+  border-left: 4px solid hsl(var(--primary));
+  padding-left: 1rem;
+  margin-left: 0;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-style: italic;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Horizontal Rule */
+.ProseMirror hr {
+  border: none;
+  border-top: 2px solid hsl(var(--border));
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* Table */
+.ProseMirror table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 1rem 0;
+  overflow: hidden;
+}
+
+.ProseMirror td,
+.ProseMirror th {
+  min-width: 1em;
+  border: 1px solid hsl(var(--border));
+  padding: 0.5rem;
+  vertical-align: top;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.ProseMirror th {
+  font-weight: 600;
+  text-align: left;
+  background-color: hsl(var(--muted));
+}
+
+.ProseMirror .selectedCell:after {
+  z-index: 2;
+  position: absolute;
+  content: "";
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: hsl(var(--primary) / 0.1);
+  pointer-events: none;
+}
+
+/* Links */
+.ProseMirror a {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.ProseMirror a:hover {
+  text-decoration: none;
+}
+
+/* Images */
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+  display: block;
+}
+
+.ProseMirror img.ProseMirror-selectednode {
+  outline: 3px solid hsl(var(--primary));
+}
+
+/* YouTube Videos */
+.ProseMirror div[data-youtube-video] {
+  margin: 1.5rem 0;
+}
+
+.ProseMirror div[data-youtube-video] iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 0.5rem;
+  border: none;
+}
+
+/* Selection */
+.ProseMirror ::selection {
+  background-color: hsl(var(--primary) / 0.2);
+}
+
+/* Focus */
+.ProseMirror:focus {
+  outline: none;
+}
+
+/* Empty state */
+.ProseMirror.ProseMirror-focused p.is-empty::before {
+  color: hsl(var(--muted-foreground));
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Viewer Mode Styles - Clean reading experience */
+.tiptap-viewer-content .ProseMirror {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  min-height: auto !important;
+}
+
+/* Remove border from container in viewer mode */
+.tiptap-viewer-content > div > div {
+  border: none !important;
+  background: transparent !important;
+}
+
+/* Better spacing for viewer */
+.tiptap-viewer-content .ProseMirror h1:first-child,
+.tiptap-viewer-content .ProseMirror h2:first-child,
+.tiptap-viewer-content .ProseMirror h3:first-child,
+.tiptap-viewer-content .ProseMirror p:first-child {
+  margin-top: 0;
+}
+
+/* Make images look better in viewer */
+.tiptap-viewer-content .ProseMirror img {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  transition: transform 0.2s;
+}
+
+.tiptap-viewer-content .ProseMirror img:hover {
+  transform: scale(1.02);
+}
+
+/* Better video embeds in viewer */
+.tiptap-viewer-content .ProseMirror div[data-youtube-video] {
+  margin: 2rem 0;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+/* Better code blocks in viewer */
+.tiptap-viewer-content .ProseMirror pre {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+/* Better tables in viewer */
+.tiptap-viewer-content .ProseMirror table {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* Disable selection outline in viewer */
+.tiptap-viewer-content .ProseMirror img.ProseMirror-selectednode {
+  outline: none;
+}
+
+/* Better link styling in viewer */
+.tiptap-viewer-content .ProseMirror a {
+  color: hsl(var(--primary));
+  text-decoration: none;
+  border-bottom: 1px solid hsl(var(--primary) / 0.3);
+  transition: border-color 0.2s;
+}
+
+.tiptap-viewer-content .ProseMirror a:hover {
+  border-bottom-color: hsl(var(--primary));
+}
+
+
+/* ==================== */
+/* Mention Styles       */
+/* ==================== */
+
+/* Base mention style */
+.mention {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+  vertical-align: baseline;
+}
+
+/* Page mention - Blue */
+.mention-page {
+  background-color: hsl(217 91% 60% / 0.15);
+  color: hsl(217 91% 50%);
+  border: 1px solid hsl(217 91% 60% / 0.3);
+}
+
+.mention-page:hover {
+  background-color: hsl(217 91% 60% / 0.25);
+  border-color: hsl(217 91% 60% / 0.5);
+}
+
+/* Skill mention - Purple */
+.mention-skill {
+  background-color: hsl(271 91% 65% / 0.15);
+  color: hsl(271 91% 55%);
+  border: 1px solid hsl(271 91% 65% / 0.3);
+}
+
+.mention-skill:hover {
+  background-color: hsl(271 91% 65% / 0.25);
+  border-color: hsl(271 91% 65% / 0.5);
+}
+
+/* Task mention - Green */
+.mention-task {
+  background-color: hsl(142 71% 45% / 0.15);
+  color: hsl(142 71% 35%);
+  border: 1px solid hsl(142 71% 45% / 0.3);
+}
+
+.mention-task:hover {
+  background-color: hsl(142 71% 45% / 0.25);
+  border-color: hsl(142 71% 45% / 0.5);
+}
+
+/* Dark mode adjustments */
+.dark .mention-page {
+  background-color: hsl(217 91% 60% / 0.2);
+  color: hsl(217 91% 70%);
+}
+
+.dark .mention-skill {
+  background-color: hsl(271 91% 65% / 0.2);
+  color: hsl(271 91% 75%);
+}
+
+.dark .mention-task {
+  background-color: hsl(142 71% 45% / 0.2);
+  color: hsl(142 71% 55%);
+}
+
+/* Mention in viewer mode - clickable */
+.tiptap-viewer-content .mention {
+  cursor: pointer;
+}
+
+.tiptap-viewer-content .mention:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

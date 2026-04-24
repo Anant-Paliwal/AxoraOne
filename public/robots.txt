@@ -1,0 +1,28 @@
+# Robots.txt for Axora
+# https://axora.work
+
+User-agent: *
+Allow: /
+Allow: /pricing
+Allow: /about
+Allow: /contact
+Allow: /terms
+Allow: /privacy
+Allow: /login
+
+# Disallow private/authenticated pages
+Disallow: /workspace/
+Disallow: /home
+Disallow: /pages/
+Disallow: /tasks
+Disallow: /skills
+Disallow: /graph
+Disallow: /settings
+Disallow: /subscription
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://axora.work/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1

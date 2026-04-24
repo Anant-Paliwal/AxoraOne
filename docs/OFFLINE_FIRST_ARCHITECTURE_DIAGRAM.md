@@ -1,0 +1,439 @@
+# Offline-First Architecture Diagram
+
+## System Overview
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         AXORA APP                                │
+│                                                                   │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │                    USER INTERFACE                           │ │
+│  │                                                              │ │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │ │
+│  │  │ Page Editor  │  │  Task List   │  │  Sync Status │     │ │
+│  │  │              │  │              │  │   Indicator  │     │ │
+│  │  └──────┬───────┘  └──────┬───────┘  └──────▲───────┘     │ │
+│  │         │                 │                  │              │ │
+│  └─────────┼─────────────────┼──────────────────┼──────────────┘ │
+│            │                 │                  │                │
+│            ▼                 ▼                  │                │
+│  ┌─────────────────────────────────────────────┼──────────────┐ │
+│  │              useOfflineSync Hook            │              │ │
+│  │                                              │              │ │
+│  │  • savePage()      • saveTask()             │              │ │
+│  │  • loadPage()      • loadTask()             │              │ │
+│  │  • syncStatus      • pendingCount           │              │ │
+│  └─────────┬────────────────┬──────────────────┼──────────────┘ │
+│            │                │                  │                │
+│            ▼                ▼                  │                │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │                  OFFLINE DATABASE                         │  │
+│  │                   (IndexedDB / Dexie)                     │  │
+│  │                                                            │  │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │  │
+│  │  │ pages_local  │  │ tasks_local  │  │  sync_queue  │   │  │
+│  │  │              │  │              │  │              │   │  │
+│  │  │ • id         │  │ • id         │  │ • event_id   │   │  │
+│  │  │ • title      │  │ • title      │  │ • entity_type│   │  │
+│  │  │ • content    │  │ • status     │  │ • payload    │   │  │
+│  │  │ • version    │  │ • version    │  │ • status     │   │  │
+│  │  └──────────────┘  └──────────────┘  └──────┬───────┘   │  │
+│  │                                              │            │  │
+│  └──────────────────────────────────────────────┼────────────┘  │
+│                                                  │               │
+│                                                  ▼               │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │                   SYNC WORKER                             │  │
+│  │                                                            │  │
+│  │  • Runs every 15 seconds                                  │  │
+│  │  • Processes 10 events per batch                          │  │
+│  │  • Exponential backoff retry                              │  │
+│  │  • Online/offline detection                               │  │
+│  └─────────────────────────┬────────────────────────────────┘  │
+│                            │                                    │
+└────────────────────────────┼────────────────────────────────────┘
+                             │
+                             │ HTTPS
+                             ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      BACKEND SERVER                              │
+│                                                                   │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │              POST /api/v1/sync/events                     │  │
+│  │                                                            │  │
+│  │  • Receives batch of sync events                          │  │
+│  │  • Idempotency check (event_id)                           │  │
+│  │  • Apply updates to database                              │  │
+│  │  • Return results per event                               │  │
+│  └─────────────────────────┬────────────────────────────────┘  │
+│                            │                                    │
+│                            ▼                                    │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │                  POSTGRESQL DATABASE                      │  │
+│  │                                                            │  │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │  │
+│  │  │    pages     │  │    tasks     │  │page_revisions│   │  │
+│  │  │              │  │              │  │              │   │  │
+│  │  │ • id         │  │ • id         │  │ • page_id    │   │  │
+│  │  │ • title      │  │ • title      │  │ • content    │   │  │
+│  │  │ • content    │  │ • status     │  │ • version    │   │  │
+│  │  │ • version ✨ │  │ • version ✨ │  │ • source     │   │  │
+│  │  └──────────────┘  └──────────────┘  └──────────────┘   │  │
+│  │                                                            │  │
+│  └────────────────────────────────────────────────────────────┘  │
+│                                                                   │
+└───────────────────────────────────────────────────────────────────┘
+
+✨ = New columns added for offline-first support
+```
+
+## Data Flow: User Edit → Server Sync
+
+```
+┌──────────────┐
+│ User types   │
+│ in editor    │
+└──────┬───────┘
+       │
+       │ 500ms debounce
+       ▼
+┌──────────────────────┐
+│ useAutosave hook     │
+│ triggers save        │
+└──────┬───────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│ offlineDBHelpers     │
+│ .savePage()          │
+└──────┬───────────────┘
+       │
+       ├─────────────────────────────┐
+       │                             │
+       ▼                             ▼
+┌──────────────────┐      ┌──────────────────┐
+│ Write to         │      │ Create sync      │
+│ pages_local      │      │ event in         │
+│ (IndexedDB)      │      │ sync_queue       │
+│                  │      │                  │
+│ ✅ INSTANT       │      │ status: pending  │
+└──────┬───────────┘      └──────┬───────────┘
+       │                         │
+       ▼                         │
+┌──────────────────┐             │
+│ UI shows         │             │
+│ "Saving..."      │             │
+│ then "Saved"     │             │
+└──────────────────┘             │
+                                 │
+       ┌─────────────────────────┘
+       │
+       │ Wait for sync worker (15s)
+       ▼
+┌──────────────────────┐
+│ Sync Worker          │
+│ checks online status │
+└──────┬───────────────┘
+       │
+       │ If online
+       ▼
+┌──────────────────────┐
+│ Fetch 10 pending     │
+│ events from queue    │
+└──────┬───────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│ POST to              │
+│ /api/v1/sync/events  │
+└──────┬───────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│ Backend processes    │
+│ events               │
+│                      │
+│ • Check idempotency  │
+│ • Update database    │
+│ • Increment version  │
+│ • Create revision    │
+└──────┬───────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│ Return results       │
+│ {ok: true, ...}      │
+└──────┬───────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│ Mark events as       │
+│ "synced" in queue    │
+└──────┬───────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│ UI shows             │
+│ "Synced ✅"          │
+└──────────────────────┘
+```
+
+## Offline Scenario
+
+```
+┌──────────────┐
+│ User edits   │
+│ page         │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────────────┐
+│ Save to IndexedDB    │
+│ ✅ SUCCESS           │
+└──────┬───────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│ Queue sync event     │
+│ status: pending      │
+└──────┬───────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│ UI shows             │
+│ "Saved offline" 📴   │
+└──────┬───────────────┘
+       │
+       │ Sync worker checks
+       ▼
+┌──────────────────────┐
+│ navigator.onLine     │
+│ = false              │
+└──────┬───────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│ Skip sync            │
+│ Event stays pending  │
+└──────┬───────────────┘
+       │
+       │ User goes online
+       ▼
+┌──────────────────────┐
+│ "online" event       │
+│ triggers sync        │
+└──────┬───────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│ Sync all pending     │
+│ events to server     │
+└──────┬───────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│ UI shows             │
+│ "Synced ✅"          │
+└──────────────────────┘
+```
+
+## Crash Recovery
+
+```
+┌──────────────┐
+│ User edits   │
+│ page         │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────────────┐
+│ Save to IndexedDB    │
+│ ✅ PERSISTED         │
+└──────┬───────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│ 💥 TAB CRASHES       │
+│ or battery dies      │
+└──────┬───────────────┘
+       │
+       │ User reopens app
+       ▼
+┌──────────────────────┐
+│ App loads            │
+│ OfflineSyncProvider  │
+│ initializes          │
+└──────┬───────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│ Sync Worker starts   │
+└──────┬───────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│ Check sync_queue     │
+│ for pending events   │
+└──────┬───────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│ Resume sync          │
+│ automatically        │
+└──────┬───────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│ ✅ NO DATA LOST      │
+└──────────────────────┘
+```
+
+## Component Hierarchy
+
+```
+App.tsx
+  └─ OfflineSyncProvider ✨
+      ├─ Initializes sync worker
+      └─ WorkspaceProvider
+          └─ PageEditor
+              ├─ useOfflineSync() ✨
+              │   ├─ savePage()
+              │   ├─ loadPage()
+              │   └─ syncStatus
+              │
+              ├─ useAutosave() ✨
+              │   └─ Debounced save (500ms)
+              │
+              └─ SyncStatusIndicator ✨
+                  └─ Shows: Saving/Saved/Syncing/Synced
+```
+
+## Database Schema
+
+### IndexedDB (Client)
+
+```sql
+-- pages_local
+{
+  id: string (PK)
+  workspace_id: string
+  title: string
+  content_json: string
+  updated_at_local: number
+  version_local: number
+  icon?: string
+  parent_id?: string
+}
+
+-- tasks_local
+{
+  id: string (PK)
+  workspace_id: string
+  title: string
+  status: string
+  priority?: string
+  due_date?: string
+  linked_page_id?: string
+  skill_ids?: string (JSON)
+  updated_at_local: number
+  version_local: number
+}
+
+-- sync_queue
+{
+  id: string (PK)
+  entity_type: 'page' | 'task'
+  entity_id: string
+  op_type: 'upsert' | 'patch' | 'delete'
+  payload_json: string
+  created_at: number
+  status: 'pending' | 'syncing' | 'synced' | 'failed'
+  retry_count: number
+  error_message?: string
+}
+
+-- sync_state
+{
+  workspace_id: string (PK)
+  last_sync_at: number
+  is_offline: boolean
+}
+```
+
+### PostgreSQL (Server)
+
+```sql
+-- pages (modified)
+ALTER TABLE pages ADD COLUMN version INTEGER DEFAULT 1;
+
+-- tasks (modified)
+ALTER TABLE tasks ADD COLUMN version INTEGER DEFAULT 1;
+
+-- page_revisions (new)
+CREATE TABLE page_revisions (
+  id UUID PRIMARY KEY,
+  page_id UUID REFERENCES pages(id),
+  content TEXT,
+  version INTEGER,
+  created_at TIMESTAMP,
+  source TEXT, -- 'client' or 'server'
+  user_id UUID REFERENCES auth.users(id)
+);
+```
+
+## Sync States
+
+```
+┌─────────┐
+│  idle   │ ◄─── No activity
+└────┬────┘
+     │
+     │ User edits
+     ▼
+┌─────────┐
+│ saving  │ ◄─── Writing to IndexedDB
+└────┬────┘
+     │
+     │ Save complete
+     ▼
+┌──────────────┐
+│saved-offline │ ◄─── Saved locally, pending sync
+└────┬─────────┘
+     │
+     │ Sync worker runs
+     ▼
+┌─────────┐
+│syncing  │ ◄─── Uploading to server
+└────┬────┘
+     │
+     ├─── Success ───┐
+     │               ▼
+     │          ┌────────┐
+     │          │ synced │ ◄─── Successfully synced
+     │          └────────┘
+     │
+     └─── Failure ───┐
+                     ▼
+                ┌───────┐
+                │ error │ ◄─── Sync failed (will retry)
+                └───────┘
+```
+
+## Key Metrics
+
+| Metric | Value | Description |
+|--------|-------|-------------|
+| Save Latency | <10ms | Time to save to IndexedDB |
+| Sync Interval | 15s | How often sync worker runs |
+| Batch Size | 10 | Events processed per sync |
+| Debounce | 500ms | Delay before autosave |
+| Max Retries | 5 | Failed sync retry limit |
+| Cleanup | 24h | Keep synced events for |
+
+## Legend
+
+- ✨ = New component/feature
+- ✅ = Success/Complete
+- 💥 = Crash/Failure
+- 📴 = Offline mode
+- 🔄 = Syncing

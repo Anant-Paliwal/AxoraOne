@@ -1,0 +1,40 @@
+from fastapi import APIRouter
+from app.api.endpoints import auth, pages, skills, tasks, graph, graph_enhanced, ai_chat, ai_preview, ai_feedback, workspaces, workspace_members, chat_sessions, learning, file_upload, blocks, cache, subscriptions, billing, templates, database, page_links, dashboard, notifications, settings, upload, intelligence, block_databases, skill_marketplace, trash, skill_suggestions, page_history, sync
+
+api_router = APIRouter()
+
+api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
+# IMPORTANT: workspace_members MUST be registered BEFORE workspaces
+# because workspaces has /{workspace_id} which would match "my-invitations" as a workspace_id
+api_router.include_router(workspace_members.router, prefix="/workspaces", tags=["workspace-members"])
+api_router.include_router(workspaces.router, prefix="/workspaces", tags=["workspaces"])
+api_router.include_router(settings.router, prefix="/settings", tags=["settings"])
+api_router.include_router(upload.router, prefix="/upload", tags=["upload"])
+api_router.include_router(dashboard.router, tags=["dashboard"])
+api_router.include_router(pages.router, prefix="/pages", tags=["pages"])
+api_router.include_router(page_links.router, prefix="/pages", tags=["page-links"])
+api_router.include_router(page_links.router, prefix="/page-links", tags=["page-links-alt"])  # Alternative prefix for frontend compatibility
+api_router.include_router(page_history.router, prefix="/page-history", tags=["page-history"])
+api_router.include_router(templates.router, prefix="/templates", tags=["templates"])
+api_router.include_router(database.router, prefix="/database", tags=["database"])
+api_router.include_router(block_databases.router, prefix="/block-databases", tags=["block-databases"])
+api_router.include_router(skills.router, prefix="/skills", tags=["skills"])
+api_router.include_router(skill_marketplace.router, prefix="/skills", tags=["skill-marketplace"])
+api_router.include_router(skill_suggestions.router, prefix="/skill-suggestions", tags=["skill-suggestions"])
+api_router.include_router(tasks.router, prefix="/tasks", tags=["tasks"])
+api_router.include_router(trash.router, prefix="/trash", tags=["trash"])
+api_router.include_router(graph.router, prefix="/graph", tags=["graph"])
+api_router.include_router(graph_enhanced.router, prefix="/graph/nx", tags=["graph-networkx"])
+api_router.include_router(ai_chat.router, prefix="/ai", tags=["ai"])
+api_router.include_router(ai_preview.router, prefix="/ai/actions", tags=["ai-preview"])
+api_router.include_router(ai_feedback.router, prefix="/ai", tags=["ai-feedback"])
+api_router.include_router(chat_sessions.router, prefix="/chat-sessions", tags=["chat-sessions"])
+api_router.include_router(learning.router, prefix="/learning", tags=["learning"])
+api_router.include_router(file_upload.router, prefix="/files", tags=["files"])
+api_router.include_router(blocks.router, prefix="/blocks", tags=["blocks"])
+api_router.include_router(cache.router, prefix="/cache", tags=["cache"])
+api_router.include_router(subscriptions.router, prefix="/subscriptions", tags=["subscriptions"])
+api_router.include_router(billing.router, prefix="/billing", tags=["billing"])
+api_router.include_router(notifications.router, prefix="/notifications", tags=["notifications"])
+api_router.include_router(intelligence.router, prefix="/intelligence", tags=["intelligence"])
+api_router.include_router(sync.router, prefix="/sync", tags=["sync"])

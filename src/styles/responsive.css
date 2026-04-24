@@ -1,0 +1,544 @@
+/* Mobile-First Responsive Styles for Axora */
+
+/* Base Mobile Styles (< 640px) */
+@media (max-width: 639px) {
+  /* Typography */
+  h1 {
+    font-size: 1.5rem !important;
+    line-height: 2rem !important;
+  }
+  
+  h2 {
+    font-size: 1.25rem !important;
+    line-height: 1.75rem !important;
+  }
+  
+  h3 {
+    font-size: 1.125rem !important;
+    line-height: 1.5rem !important;
+  }
+  
+  /* Spacing */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Cards */
+  .card {
+    border-radius: 0.75rem !important;
+  }
+  
+  /* Buttons */
+  button {
+    min-height: 44px; /* Touch-friendly */
+  }
+  
+  /* Dialogs */
+  [role="dialog"] {
+    max-width: calc(100vw - 2rem) !important;
+    margin: 1rem !important;
+  }
+  
+  /* Tables - Make scrollable */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  /* Forms */
+  input, textarea, select {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+  
+  /* Navigation */
+  nav {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Grid layouts - Stack on mobile */
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Flex layouts - Wrap on mobile */
+  .flex {
+    flex-wrap: wrap;
+  }
+}
+
+/* Tablet Styles (640px - 1023px) */
+@media (min-width: 640px) and (max-width: 1023px) {
+  /* 2-column grids on tablet */
+  .grid-cols-3, .grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  /* Adjust spacing */
+  .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+/* Desktop Styles (>= 1024px) */
+@media (min-width: 1024px) {
+  /* Sidebar always visible */
+  aside {
+    position: static !important;
+    transform: none !important;
+  }
+  
+  /* Full width containers */
+  .container {
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger touch targets */
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Remove hover effects on touch devices */
+  *:hover {
+    transition: none !important;
+  }
+  
+  /* Better tap highlighting */
+  * {
+    -webkit-tap-highlight-color: rgba(139, 92, 246, 0.1);
+  }
+}
+
+/* Landscape Mobile Optimization */
+@media (max-width: 896px) and (orientation: landscape) {
+  /* Reduce vertical spacing in landscape */
+  .py-8 {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+  
+  /* Smaller headers in landscape */
+  h1 {
+    font-size: 1.25rem !important;
+  }
+  
+  /* Compact navigation */
+  nav {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Sharper borders */
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Dark Mode Adjustments for Mobile */
+@media (prefers-color-scheme: dark) and (max-width: 639px) {
+  /* Slightly lighter backgrounds for better readability on small screens */
+  .bg-card {
+    background-color: hsl(var(--card) / 0.95);
+  }
+}
+
+/* Safe Area Insets (for notched devices) */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+  
+  /* Fixed elements respect safe areas */
+  .fixed {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
+}
+
+/* Scrollbar Styles for Mobile */
+@media (max-width: 639px) {
+  /* Thinner scrollbars on mobile */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted));
+    border-radius: 2px;
+  }
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Keyboard Visible Adjustments (iOS) */
+@supports (-webkit-touch-callout: none) {
+  /* Adjust viewport when keyboard is visible */
+  input:focus, textarea:focus {
+    font-size: 16px; /* Prevents zoom */
+  }
+}
+
+/* Specific Component Responsive Fixes */
+
+/* Dashboard Grid - Mobile First */
+@media (max-width: 767px) {
+  /* Force single column on mobile */
+  [class*="grid-cols"] {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* All widgets full width on mobile */
+  [class*="col-span"] {
+    grid-column: span 1 !important;
+  }
+  
+  /* Auto height on mobile */
+  [class*="row-span"] {
+    grid-row: auto !important;
+  }
+  
+  .dashboard-widget {
+    min-height: 250px !important;
+  }
+  
+  /* Ensure widgets stack vertically */
+  .dashboard-grid > div,
+  [class*="grid"] > div {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+  }
+}
+
+/* Tablet - 2 columns */
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Limit widget span to max 2 columns on tablet */
+  [class*="col-span-3"],
+  [class*="col-span-4"] {
+    grid-column: span 2 !important;
+  }
+}
+
+/* Page Editor */
+@media (max-width: 639px) {
+  .page-editor {
+    padding: 0.5rem !important;
+  }
+  
+  .editor-toolbar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .editor-toolbar button {
+    padding: 0.5rem !important;
+  }
+}
+
+/* Knowledge Graph */
+@media (max-width: 639px) {
+  .knowledge-graph {
+    height: 400px !important;
+  }
+  
+  .graph-controls {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* Task List */
+@media (max-width: 639px) {
+  .task-item {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 0.5rem;
+  }
+  
+  .task-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+/* Skills Page */
+@media (max-width: 639px) {
+  .skill-card {
+    padding: 1rem !important;
+  }
+  
+  .skill-progress {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+}
+
+/* Calendar */
+@media (max-width: 639px) {
+  .calendar-view {
+    font-size: 0.75rem !important;
+  }
+  
+  .calendar-day {
+    min-height: 60px !important;
+  }
+  
+  .calendar-event {
+    font-size: 0.625rem !important;
+    padding: 0.125rem 0.25rem !important;
+  }
+}
+
+/* Modals and Dialogs */
+@media (max-width: 639px) {
+  [role="dialog"] {
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+  }
+  
+  .dialog-content {
+    padding: 1rem !important;
+  }
+  
+  .dialog-header {
+    padding: 1rem !important;
+  }
+  
+  .dialog-footer {
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+  }
+  
+  .dialog-footer button {
+    width: 100%;
+  }
+}
+
+/* Dropdown Menus */
+@media (max-width: 639px) {
+  [role="menu"] {
+    max-width: calc(100vw - 2rem) !important;
+  }
+}
+
+/* Tooltips - Hide on mobile */
+@media (max-width: 639px) {
+  [role="tooltip"] {
+    display: none !important;
+  }
+}
+
+/* Floating Action Button */
+@media (max-width: 639px) {
+  .floating-ask-anything {
+    bottom: 1rem !important;
+    right: 1rem !important;
+    width: 56px !important;
+    height: 56px !important;
+  }
+}
+
+/* Workspace Selector */
+@media (max-width: 639px) {
+  .workspace-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .workspace-card {
+    padding: 1rem !important;
+  }
+}
+
+/* Settings Page */
+@media (max-width: 639px) {
+  .settings-sidebar {
+    position: static !important;
+    width: 100% !important;
+    border-right: none !important;
+    border-bottom: 1px solid hsl(var(--border));
+  }
+  
+  .settings-content {
+    padding: 1rem !important;
+  }
+}
+
+/* Notifications */
+@media (max-width: 639px) {
+  .notification-item {
+    padding: 0.75rem !important;
+  }
+  
+  .notification-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+}
+
+/* Search Bar */
+@media (max-width: 639px) {
+  .search-bar {
+    width: 100% !important;
+  }
+  
+  .search-results {
+    max-height: 60vh !important;
+  }
+}
+
+/* Breadcrumbs */
+@media (max-width: 639px) {
+  .breadcrumb {
+    font-size: 0.75rem !important;
+  }
+  
+  .breadcrumb-item {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* Data Tables */
+@media (max-width: 639px) {
+  .data-table {
+    font-size: 0.875rem !important;
+  }
+  
+  .data-table th,
+  .data-table td {
+    padding: 0.5rem !important;
+  }
+  
+  /* Hide less important columns on mobile */
+  .data-table .hide-mobile {
+    display: none !important;
+  }
+}
+
+/* Charts and Graphs */
+@media (max-width: 639px) {
+  .chart-container {
+    height: 250px !important;
+  }
+  
+  .chart-legend {
+    font-size: 0.75rem !important;
+  }
+}
+
+/* Loading States */
+@media (max-width: 639px) {
+  .loading-spinner {
+    width: 2rem !important;
+    height: 2rem !important;
+  }
+}
+
+/* Empty States */
+@media (max-width: 639px) {
+  .empty-state {
+    padding: 2rem 1rem !important;
+  }
+  
+  .empty-state-icon {
+    width: 3rem !important;
+    height: 3rem !important;
+  }
+}
+
+/* Utility Classes for Responsive Design */
+.mobile-only {
+  display: block;
+}
+
+.desktop-only {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .mobile-only {
+    display: none;
+  }
+  
+  .desktop-only {
+    display: block;
+  }
+}
+
+/* Responsive Text Sizes */
+.text-responsive-xs {
+  font-size: 0.75rem;
+}
+
+.text-responsive-sm {
+  font-size: 0.875rem;
+}
+
+.text-responsive-base {
+  font-size: 0.875rem;
+}
+
+.text-responsive-lg {
+  font-size: 1rem;
+}
+
+.text-responsive-xl {
+  font-size: 1.125rem;
+}
+
+@media (min-width: 640px) {
+  .text-responsive-base {
+    font-size: 1rem;
+  }
+  
+  .text-responsive-lg {
+    font-size: 1.125rem;
+  }
+  
+  .text-responsive-xl {
+    font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .text-responsive-lg {
+    font-size: 1.25rem;
+  }
+  
+  .text-responsive-xl {
+    font-size: 1.5rem;
+  }
+}
